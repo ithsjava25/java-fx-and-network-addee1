@@ -16,6 +16,8 @@
         </VBox.margin>
 
         <TextField fx:id="messageField" prefHeight="40" promptText="Write something here.." HBox.hgrow="ALWAYS" />
+        <Button text="📎" onAction="#attachFile" prefHeight="40" prefWidth="40"/>
+
         <Button onAction="#sendMessage" prefHeight="40" prefWidth="80" text="Send" />
     </HBox>
 
