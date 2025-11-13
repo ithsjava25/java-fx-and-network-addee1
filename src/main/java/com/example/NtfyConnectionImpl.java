@@ -1,6 +1,8 @@
 package com.example;
 import io.github.cdimascio.dotenv.Dotenv;
 import tools.jackson.databind.ObjectMapper;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -28,7 +30,7 @@ public class NtfyConnectionImpl implements NtfyConnection {
     public boolean send(String message) {
                 HttpRequest httpRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(message))
-                .uri(URI.create(hostName + "/mytopic"))
+                .uri(URI.create(hostName + "/adam"))
                 .build();
         try {
             // TODO: handle long blocking send requests to not freeze the JavaFX thread
@@ -46,17 +48,53 @@ public class NtfyConnectionImpl implements NtfyConnection {
 
     @Override
     public void receive(Consumer<NtfyMessageDto> messageHandler) {
+        String startId = "8TuugOLkvDz1"; // just to make the app wont load 10000000 messages
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(hostName + "/mytopic/json?since=wBuD2KGEaAe0"))
+                .uri(URI.create(hostName + "/adam/json?since=3hPbr2dcIUiU"))
                 .build();
 
+
         http.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofLines())
+
                 .thenAccept(response -> response.body()
-                        .map(s->
-                                mapper.readValue(s, NtfyMessageDto.class))
-                        .filter(message -> message.event().equals("message"))
-                        .peek(System.out::println)
-                        .forEach(messageHandler));
+                        .peek(s -> System.out.println(s))
+                        .map(s -> {
+                            try {
+                                return mapper.readValue(s, NtfyMessageDto.class);
+                            } catch (Exception e) {
+                                System.out.println("JSON parse fail: " + s);
+                                return null;
+                            }
+                        })
+                        .filter(msg -> msg != null)
+                        .filter(msg -> "message".equals(msg.event()))
+                        .forEach(messageHandler)
+                );
+    }
+
+    @Override
+    public boolean sendFile(File file){
+        try {
+            String mime = java.nio.file.Files.probeContentType(file.toPath());
+
+            if(mime == null) mime =  "application/octet-stream";
+
+            long size = file.length();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(hostName + "/adam"))
+                    .header("Filename", file.getName())
+                    .header("Content-Type", mime)
+                    .PUT(HttpRequest.BodyPublishers.ofFile(file.toPath()))
+                    .build();
+
+            http.sendAsync(request, HttpResponse.BodyHandlers.discarding());
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
