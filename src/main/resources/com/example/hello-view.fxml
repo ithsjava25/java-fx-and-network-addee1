@@ -3,10 +3,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.HelloController">
+<?import javafx.geometry.Insets?>
+<VBox alignment="CENTER" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.HelloController">
 
     <Label fx:id="messageLabel" text="Adams Chat Client" />
-    <Button onAction="#sendMessage" prefHeight="25.0" prefWidth="115.0" text="Send message" />
     <ListView fx:id="messageView" />
+
+
+    <HBox alignment="CENTER_RIGHT" spacing="5" prefHeight="40" maxWidth="600">
+        <VBox.margin>
+            <Insets top="10" left="10" right="10" bottom="10" />
+        </VBox.margin>
+
+        <TextField fx:id="messageField" prefHeight="40" promptText="Write something here.." HBox.hgrow="ALWAYS" />
+        <Button onAction="#sendMessage" prefHeight="40" prefWidth="80" text="Send" />
+    </HBox>
 
 </VBox>

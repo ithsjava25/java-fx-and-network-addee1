@@ -1,0 +1,43 @@
+.list-view {
+    -fx-control-inner-background: white;
+    -fx-control-inner-background-alt: white;
+    -fx-background-color: white;
+    -fx-selection-bar: transparent;
+    -fx-selection-bar-non-focused: transparent;
+    -fx-border-color: transparent;
+}
+.list-cell {
+    -fx-background-color: #060312;
+    -fx-padding: 5 10 5 10;
+}
+.chat-bubble {
+    -fx-background-color: linear-gradient(to bottom right, #a922b5, #3d11ed);
+    -fx-background-radius: 15;
+    -fx-padding: 10;
+    -fx-text-fill: white;
+}
+.chat-bubble .label {
+    -fx-text-fill: white;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to bottom right, #6366f1, #4f46e5);
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 24 8 24;
+    -fx-cursor: hand;/
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 3);
+    -fx-transition: all 0.3s ease;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #7c3aed, #4338ca);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom right, #4338ca, #312e81);
+    -fx-translate-y: 2;
+}
