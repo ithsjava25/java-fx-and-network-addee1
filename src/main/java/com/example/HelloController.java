@@ -59,7 +59,6 @@ public class HelloController {
         // causes image messages to flicker or disappear when clicking or scrolling.
         messageView.setSelectionModel(new NoSelectionModel<>());
 
-
         messageView.setCellFactory(list -> new ListCell<>() {
 
             private final Label textLabel = new Label();
