@@ -3,6 +3,8 @@ package com.example;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import javafx.application.Platform;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +16,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @WireMockTest
 class HelloModelTest {
+
+    @BeforeAll
+    static void initJavaFx() {
+        Platform.startup(() -> {});
+    }
 
     @Test
     @DisplayName("Given a model with messageToSend when calling sendMessage then send method on connection should be called ")
@@ -69,13 +76,16 @@ class HelloModelTest {
 
         model.sendFile(temp);
 
+        // Wait a moment for async request to complete
+        Thread.sleep(500);
+
         verify(putRequestedFor(urlEqualTo("/adam")));
 
     }
 
     @Test
     @DisplayName("Model should receive messages when connection invokes handler")
-    void receiveMessageShouldAddToModelViewHander(){
+    void receiveMessageShouldAddToModelViewHander() throws Exception{
         var spy = new NtfyConnectionSpy();
         var model = new HelloModel(spy);
 
@@ -90,6 +100,9 @@ class HelloModelTest {
         );
 
         spy.simulateIncoming(incoming);
+
+        // Wait a moment for async request to complete
+        Thread.sleep(500);
 
         assertThat(model.getMessages()).containsExactly(incoming);
     }
