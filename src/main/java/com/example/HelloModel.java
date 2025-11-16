@@ -52,14 +52,9 @@ public class HelloModel {
     }
 
     public void receiveMessage() {
-        connection.receive(m-> {
-            try {
-                Platform.runLater(()->messages.add(m));
-            } catch (IllegalStateException e) {
-                messages.add(m);
-            }
-
-        });
+        connection.receive(m ->
+                Platform.runLater(() -> messages.add(m))
+        );
     }
 
     public void sendFile(File file) {
