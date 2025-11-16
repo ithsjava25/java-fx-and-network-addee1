@@ -55,7 +55,7 @@ public class NtfyConnectionImpl implements NtfyConnection {
         http.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofLines())
 
                 .thenAccept(response -> response.body()
-                        .peek(s -> System.out.println(s))
+                        .peek(System.out::println)
                         .map(s -> {
                             try {
                                 return mapper.readValue(s, NtfyMessageDto.class);
@@ -64,7 +64,7 @@ public class NtfyConnectionImpl implements NtfyConnection {
                                 return null;
                             }
                         })
-                        .filter(msg -> msg != null)
+                        .filter(Objects::nonNull)
                         .filter(msg -> "message".equals(msg.event()))
                         .forEach(messageHandler)
                 );
