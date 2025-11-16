@@ -6,6 +6,9 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,13 +36,96 @@ class HelloModelTest {
         var con = new NtfyConnectionImpl("http://localhost:" + wmRuntimeInfo.getHttpPort());
         var model = new HelloModel(con);
         model.setMessageToSend("Hello World");
-        stubFor(post("/mytopic").willReturn(ok()));
+        stubFor(post("/adam").willReturn(ok()));
 
         model.sendMessage();
 
         // Verify call made to server
-        verify(postRequestedFor(urlEqualTo("/mytopic"))
+        verify(postRequestedFor(urlEqualTo("/adam"))
                 .withRequestBody(matching("Hello World")));
     }
+
+    @Test
+    @DisplayName("Given file when calling sendFile then connection.sendFile should be called")
+    void sendFileCallConnectionSendFile() {
+        var spy = new NtfyConnectionSpy();
+        var model = new HelloModel(spy);
+
+        File file = new File("dummy.txt");
+        model.sendFile(file);
+
+        assertThat(spy.sentFile).isEqualTo(file);
+    }
+
+    @Test
+    @DisplayName("sendFile should upload file to the server using PUT")
+    void sendFileToFakeServer(WireMockRuntimeInfo wmRuntimeInfo) throws Exception {
+        var con = new NtfyConnectionImpl("http://localhost:" + wmRuntimeInfo.getHttpPort());
+        var model = new HelloModel(con);
+
+        File temp = File.createTempFile("upload_test", ".txt");
+
+        stubFor(put("/adam").willReturn(ok()));
+
+        model.sendFile(temp);
+
+        verify(putRequestedFor(urlEqualTo("/adam")));
+
+    }
+
+    @Test
+    @DisplayName("Model should receive messages when connection invokes handler")
+    void receiveMessageShouldAddToModelViewHander(){
+        var spy = new NtfyConnectionSpy();
+        var model = new HelloModel(spy);
+
+        NtfyMessageDto incoming = new NtfyMessageDto(
+                "123",
+                1000,
+                0,
+                "message",
+                "adam",
+                "this is a test hehehe",
+                null
+        );
+
+        spy.simulateIncoming(incoming);
+
+        assertThat(model.getMessages()).containsExactly(incoming);
+    }
+
+    @Test
+    @DisplayName("Model constructor should register receive handler on connection")
+    void constructorShouldRegisterHandler() {
+
+        var spy = new NtfyConnectionSpy();
+        var model = new HelloModel(spy);
+
+        assertThat(spy.handler).isNotNull();
+    }
+
+    @Test
+    @DisplayName("messageToSendProperty should update when setting message")
+    void messagePropertyShouldUpdate() {
+
+        var spy = new NtfyConnectionSpy();
+        var model = new HelloModel(spy);
+
+        model.setMessageToSend("Hello!");
+
+        assertThat(model.getMessageToSend()).isEqualTo("Hello!");
+    }
+
+    @Test
+    @DisplayName("getGreeting should return the expected greeting text")
+    void greetingShouldBeCorrect() {
+
+        var model = new HelloModel(new NtfyConnectionSpy());
+
+        assertThat(model.getGreeting()).isEqualTo("Chat Client by Adam");
+    }
+
+
+
 
 }
