@@ -33,9 +33,6 @@ public class NtfyConnectionImpl implements NtfyConnection {
                 .uri(URI.create(hostName + "/adam"))
                 .build();
         try {
-            // TODO: handle long blocking send requests to not freeze the JavaFX thread
-            // 1. Use thread send message?
-            // 2. Use async?
             var response = http.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             return true;
         } catch (IOException e) {
@@ -89,7 +86,7 @@ public class NtfyConnectionImpl implements NtfyConnection {
                     .PUT(HttpRequest.BodyPublishers.ofFile(file.toPath()))
                     .build();
 
-            http.send(request, HttpResponse.BodyHandlers.discarding());
+            http.sendAsync(request, HttpResponse.BodyHandlers.discarding());
             return true;
 
         } catch (Exception e) {
