@@ -89,7 +89,7 @@ public class NtfyConnectionImpl implements NtfyConnection {
                     .PUT(HttpRequest.BodyPublishers.ofFile(file.toPath()))
                     .build();
 
-            http.sendAsync(request, HttpResponse.BodyHandlers.discarding());
+            http.send(request, HttpResponse.BodyHandlers.discarding());
             return true;
 
         } catch (Exception e) {
